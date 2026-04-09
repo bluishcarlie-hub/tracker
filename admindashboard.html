@@ -152,10 +152,11 @@ function closeSidebar() {
   burger.classList.remove('open');
 }
 
-window.onload = function(){
+window.onload = async function(){
   if(!currentUser || currentUser.role !== 'admin'){
     window.location.href = 'login.html';
   }
+  window.users = await getAllUsers();
   showDashboard();
   updateAdminOverview();
   renderApprovedStudents();
