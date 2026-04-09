@@ -561,18 +561,21 @@ async function updateAdminOverview(){
 }
 
 window.onload = async function(){
-  if((window.location.pathname.includes('studentdashboard.html') || window.location.pathname.includes('admindashboard.html')) && !currentUser){
+  // Only redirect on dashboard pages if not logged in
+  if((window.location.pathname.includes('studentdashboard.html') || window.location.pathname.includes('admindashboard.html') || window.location.pathname.includes('loginapprove.html') || window.location.pathname.includes('taskapprove.html')) && !currentUser){
     window.location.href = 'login.html';
     return;
   }
 
+  // Redirect logged-in users away from login/register pages
   if((window.location.pathname.includes('login.html') || window.location.pathname.includes('register.html')) && currentUser){
     if(currentUser.role === 'admin') window.location.href = 'admindashboard.html';
     else window.location.href = 'studentdashboard.html';
     return;
   }
 
-  if((window.location.pathname.includes('studentdashboard.html') || window.location.pathname.includes('admindashboard.html')) && currentUser){
+  // Dashboard-specific initialization
+  if(window.location.pathname.includes('studentdashboard.html') || window.location.pathname.includes('admindashboard.html')){
     await refreshCurrentUser();
     showDashboard();
     await renderLogs();
