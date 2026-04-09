@@ -104,6 +104,8 @@ async function refreshCurrentUser(){
 }
 
 async function register(){
+  if(!supabaseClient) return alert('Database connection failed. Please refresh the page.');
+  
   let studentNumber = document.getElementById('studentNumber').value.trim();
   let name = document.getElementById('name').value.trim();
   let email = document.getElementById('email').value.trim();
@@ -151,6 +153,8 @@ async function register(){
 }
 
 async function login(){
+  if(!supabaseClient) return alert('Database connection failed. Please refresh the page.');
+  
   let studentNumber = document.getElementById('studentNumber').value.trim();
   let password = document.getElementById('password').value.trim();
 
@@ -193,6 +197,9 @@ function showDashboard(){
 }
 
 async function addLog(){
+  if(!supabaseClient) return alert('Database connection failed. Please refresh the page.');
+  if(!currentUser) return alert('You must be logged in to add a log.');
+  
   let date = document.getElementById('date').value;
   let task = document.getElementById('task').value.trim();
   let hours = document.getElementById('hours').value.trim();
@@ -226,6 +233,8 @@ async function addLog(){
 }
 
 async function renderLogs(){
+  if(!supabaseClient) return console.error('Database connection failed');
+  
   let table = document.getElementById('logs');
   if(!table) return;
   table.innerHTML = '';
@@ -297,6 +306,8 @@ async function deleteLog(id){
 }
 
 async function renderPendingUsers(){
+  if(!supabaseClient) return console.error('Database connection failed');
+  
   let table = document.getElementById('pendingUsers');
   if(!table) return;
   table.innerHTML = '<tr><th>Student Number</th><th>Name</th><th>Email</th><th>Picture</th><th>Registration Date</th><th>Action</th></tr>';
@@ -328,6 +339,8 @@ async function approveUser(studentNumber){
 }
 
 async function renderApprovedStudents(){
+  if(!supabaseClient) return console.error('Database connection failed');
+  
   let table = document.getElementById('approvedStudents');
   if(!table) return;
   table.innerHTML = '';
@@ -373,6 +386,8 @@ async function rejectUser(studentNumber){
 }
 
 async function renderLocationMonitoring(){
+  if(!supabaseClient) return console.error('Database connection failed');
+  
   let table = document.getElementById('locationTable');
   if(!table) return;
 
