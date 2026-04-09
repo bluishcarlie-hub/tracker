@@ -58,10 +58,11 @@ function readFileAsDataURL(file){
 }
 
 async function uploadToStorage(file, path){
-  const { data, error } = await supabaseClient.storage.from('ojt-images').upload(path, file);
+  const { data, error } = await supabaseClient.storage.from('ojt-images').upload(path, file, { upsert: true });
   if(error) throw error;
-  const { data: urlData } = supabaseClient.storage.from('ojt-images').getPublicUrl(path);
-  return urlData.publicUrl;
+  const { data: urlData, error: urlError } = supabaseClient.storage.from('ojt-images').getPublicUrl(path);
+  if(urlError) throw urlError;
+  return urlData.publicUrl || `${SUPABASE_URL}/storage/v1/object/public/ojt-images/${encodeURIComponent(path)}`;
 }
 
 async function getAllUsers(){
@@ -201,6 +202,7 @@ async function addLog(){
     }
   }
 
+  const status = proof ? 'Approved' : 'Pending';
   const { error } = await supabaseClient.from('logs').insert([{
     user_id: currentUser.id,
     email: currentUser.email,
@@ -208,7 +210,7 @@ async function addLog(){
     task,
     hours: Number(hours),
     proof,
-    status: proof ? 'Approved' : 'Pending'
+    status
   }]);
   if(handleError(error)) return;
 
