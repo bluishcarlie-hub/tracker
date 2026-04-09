@@ -57,6 +57,13 @@ function readFileAsDataURL(file){
   });
 }
 
+async function uploadToStorage(file, path){
+  const { data, error } = await supabase.storage.from('ojt-images').upload(path, file);
+  if(error) throw error;
+  const { data: urlData } = supabase.storage.from('ojt-images').getPublicUrl(path);
+  return urlData.publicUrl;
+}
+
 async function getAllUsers(){
   const { data, error } = await supabase.from('users').select('*').order('name', { ascending: true });
   if(handleError(error)) return [];
@@ -108,9 +115,10 @@ async function register(){
   let picture = null;
   if(file){
     try {
-      picture = await readFileAsDataURL(file);
+      const path = `profiles/${studentNumber}_${Date.now()}.jpg`;
+      picture = await uploadToStorage(file, path);
     } catch(err){
-      return alert('Failed to read image file.');
+      return alert('Failed to upload image.');
     }
   }
 
@@ -186,9 +194,10 @@ async function addLog(){
   let proof = null;
   if(file){
     try {
-      proof = await readFileAsDataURL(file);
+      const path = `logs/${currentUser.student_number}_${Date.now()}.jpg`;
+      proof = await uploadToStorage(file, path);
     } catch(err){
-      return alert('Unable to read proof image.');
+      return alert('Unable to upload proof image.');
     }
   }
 
