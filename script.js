@@ -181,9 +181,9 @@ async function logout(){
 
 function showDashboard(){
   if(!currentUser) return;
-  let displayName = currentUser.name || (currentUser.role === 'admin' ? 'ADMIN' : 'STUDENT');
+  let displayName = currentUser.name || currentUser.student_number || (currentUser.role === 'admin' ? 'ADMIN' : 'STUDENT');
   let displayText = displayName;
-  if(currentUser.student_number) displayText += ` (${currentUser.student_number})`;
+  if(currentUser.student_number && currentUser.student_number !== displayName) displayText += ` (${currentUser.student_number})`;
   document.getElementById('role').innerText = displayText;
   let picElement = document.getElementById('profilePic');
   if(picElement){
@@ -191,7 +191,9 @@ function showDashboard(){
       picElement.src = currentUser.picture;
       picElement.style.display = 'inline-block';
     } else {
-      picElement.style.display = 'none';
+      // Show default avatar if no picture
+      picElement.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiNFNUU3RUIiLz4KPHBhdGggZD0iTTI1IDI1QzI5LjQyMTMgMjUgMzMgMjAuNDIxMyAzMyAxNUMzMyAxMC41NzkgMjkuNDIxMyA3IDI1IDdDMjAuNTc5IDcgMTcgMTAuNTc5IDE3IDE1QzE3IDIwLjQyMTMgMjAuNTc5IDI1IDI1IDI1WiIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjIiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPgo8L3N2Zz4=';
+      picElement.style.display = 'inline-block';
     }
   }
 }
@@ -575,11 +577,11 @@ async function updateAdminOverview(){
   document.getElementById('pendingCount').innerText = pendingUsers ? pendingUsers.length : 0;
 }
 
-window.onload = async function(){
+document.addEventListener('DOMContentLoaded', async function(){
   // Dashboard-specific initialization
   if(window.location.pathname.includes('studentdashboard.html') || window.location.pathname.includes('admindashboard.html')){
     await refreshCurrentUser();
     showDashboard();
     await renderLogs();
   }
-};
+});
