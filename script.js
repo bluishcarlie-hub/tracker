@@ -212,25 +212,23 @@ function showDashboard(){
   }
 
   // Update student profile section (for student dashboard)
-  const studentHeader = document.getElementById('studentHeader');
   const studentNameElement = document.getElementById('studentName');
+  const studentNumberBadge = document.getElementById('studentNumberBadge');
   const studentDetailsElement = document.getElementById('studentDetails');
   const studentProfileElement = document.getElementById('studentProfile');
 
-  if(studentHeader){
-    studentHeader.innerText = displayName;
-    studentHeader.style.display = 'block';
-  }
-
-  if(studentNameElement && studentDetailsElement && studentProfileElement) {
+  if(studentNameElement && studentNumberBadge && studentDetailsElement && studentProfileElement) {
     // This is the student dashboard - show profile section
     studentNameElement.innerText = displayName;
+    if(currentUser.student_number) {
+      studentNumberBadge.innerText = currentUser.student_number;
+      studentNumberBadge.style.display = 'inline-block';
+    } else {
+      studentNumberBadge.style.display = 'none';
+    }
 
     // Create detail spans
     let detailsHtml = '';
-    if(currentUser.student_number) {
-      detailsHtml += `<span>ID: ${currentUser.student_number}</span>`;
-    }
     if(currentUser.email) {
       detailsHtml += `<span>Email: ${currentUser.email}</span>`;
     }
