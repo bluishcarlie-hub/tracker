@@ -1,6 +1,6 @@
-const SUPABASE_URL = "https://oliggyodywpajiwzsoft.supabaseClient.co";
+const SUPABASE_URL = "https://oliggyodywpajiwzsoft.supabase.co";
 const SUPABASE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9saWdneW9keXdwYWppd3pzb2Z0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MjY1ODEsImV4cCI6MjA5MTMwMjU4MX0.tE5s7Q-NWd8Cz4jlOIOdr6Z68v8n8HNp9jHnur1VPLk";
-const supabaseClient = window.supabaseClient.createClient(SUPABASE_URL, SUPABASE_API_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
 let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
 
@@ -445,7 +445,7 @@ async function showStudentProfile(email){
   let profileHTML = `
     <div id="profileModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;">
       <div style="background:#fff; color:#111; width:100%; max-width:760px; max-height:90%; overflow:auto; border-radius:16px; box-shadow:0 24px 60px rgba(0,0,0,0.35); padding:24px; position:relative;">
-        <button onclick="closeProfileModal()" style="position:absolute; top:16px; right:16px; width:32px; height:32px; border:none; border-radius:50%; background:#ef4444; color:#fff; cursor:pointer; font-weight:bold;">×</button>
+        <button onclick="closeProfileModal()" style="position:absolute; top:16px; right:16px; width:32px; height:32px; border:none; border-radius:50%; background:#ef4444; color:#fff; cursor:pointer; font-weight:bold;">ï¿½</button>
         <h2 style="margin-top:0; margin-bottom:18px; display:inline-block;">Student Profile</h2>
         <button onclick="downloadStudentHistory('${email}')" style="margin-left:16px; padding:8px 14px; background:#2563eb; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px;">Download History</button>
         <div style="display:grid; grid-template-columns:140px 1fr; gap:20px; align-items:start; margin-bottom:20px;">
@@ -491,7 +491,7 @@ function showFullProof(src){
   let proofHTML = `
     <div id="proofModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:3000; display:flex; align-items:center; justify-content:center; padding:20px;">
       <div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-        <button onclick="document.getElementById('proofModal')?.remove()" style="position:absolute; top:20px; right:20px; width:40px; height:40px; border:none; border-radius:50%; background:#ef4444; color:#fff; font-size:20px; cursor:pointer; z-index:2;">×</button>
+        <button onclick="document.getElementById('proofModal')?.remove()" style="position:absolute; top:20px; right:20px; width:40px; height:40px; border:none; border-radius:50%; background:#ef4444; color:#fff; font-size:20px; cursor:pointer; z-index:2;">ï¿½</button>
         <img src="${src}" style="max-width:95%; max-height:95%; width:auto; height:auto; object-fit:contain; border-radius:12px; box-shadow:0 16px 40px rgba(0,0,0,0.5);" />
       </div>
     </div>
