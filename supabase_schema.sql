@@ -36,6 +36,13 @@ create table if not exists public.logs (
 
 alter table public.logs disable row level security;
 
+-- Create storage bucket for images
+insert into storage.buckets (id, name, public) values ('ojt-images', 'ojt-images', true) on conflict do nothing;
+
+-- Storage policies for ojt-images bucket
+create policy "Allow anon upload to ojt-images" on storage.objects for insert with check (bucket_id = 'ojt-images');
+create policy "Allow public access to ojt-images" on storage.objects for select using (bucket_id = 'ojt-images');
+
 create index if not exists idx_logs_user_id on public.logs(user_id);
 create index if not exists idx_users_role on public.users(role);
 
