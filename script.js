@@ -190,10 +190,13 @@ function showDashboard(){
     if(currentUser.picture){
       picElement.src = currentUser.picture;
       picElement.style.display = 'inline-block';
-    } else {
-      // Show default avatar if no picture
+    } else if(currentUser.role === 'student') {
+      // Show default avatar only for students
       picElement.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiNFNUU3RUIiLz4KPHBhdGggZD0iTTI1IDI1QzI5LjQyMTMgMjUgMzMgMjAuNDIxMyAzMyAxNUMzMyAxMC41NzkgMjkuNDIxMyA3IDI1IDdDMjAuNTc5IDcgMTcgMTAuNTc5IDE3IDE1QzE3IDIwLjQyMTMgMjAuNTc5IDI1IDI1IDI1WiIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjIiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPgo8L3N2Zz4=';
       picElement.style.display = 'inline-block';
+    } else {
+      // Hide for admins without pictures
+      picElement.style.display = 'none';
     }
   }
 }
