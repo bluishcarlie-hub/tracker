@@ -230,7 +230,7 @@ function showDashboard(){
       detailsHtml += `<span>Registered: ${regDate}</span>`;
     }
 
-    studentDetailsElement.innerHTML = detailsHtml;
+    studentDetailsElement.innerHTML = detailsHtml || '<span style="color:#dbeafe;">No profile details available.</span>';
     studentProfileElement.style.display = 'flex';
   } else if(studentProfileElement) {
     // This is admin dashboard - hide profile section
@@ -328,6 +328,10 @@ async function renderLogs(){
     console.log('Fetched logs:', logsData ? logsData.length : 0, 'logs');
 
     const usersList = await getAllUsers();
+
+    if(!logsData || logsData.length === 0){
+      table.innerHTML = `<tr><td colspan="6" style="padding:20px; text-align:center; color:#94a3b8;">No logs found yet. Add a new log to save your work.</td></tr>`;
+    }
 
     (logsData || []).forEach((l) => {
       if(!isAdmin && l.status === 'Approved') total += Number(l.hours);
@@ -676,13 +680,9 @@ document.addEventListener('DOMContentLoaded', async function(){
 
       console.log('Current user loaded:', currentUser.name || currentUser.student_number);
 
-      // Ensure DOM is fully ready before updating UI
-      setTimeout(async () => {
-        console.log('Calling showDashboard and renderLogs...');
-        showDashboard();
-        await renderLogs();
-        console.log('Dashboard initialization complete');
-      }, 200);
+      showDashboard();
+      await renderLogs();
+      console.log('Dashboard initialization complete');
 
     } catch(error) {
       console.error('Dashboard initialization failed:', error);
