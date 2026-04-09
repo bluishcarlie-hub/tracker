@@ -77,9 +77,14 @@
 <div class="container">
 
 <div id="dashboard" class="card">
-<h2 id="role"></h2>
-<img id="profilePic" style="width:50px; height:50px; border-radius:50%; display:none;">
-<!-- Logout button moved to sidebar -->
+<!-- Student Profile Section -->
+<div id="studentProfile" style="display: flex; align-items: center; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+  <img id="profilePic" style="width: 60px; height: 60px; border-radius: 50%; margin-right: 15px; border: 2px solid #2563eb;">
+  <div>
+    <h3 id="studentName" style="margin: 0; color: #1f2937;"></h3>
+    <p id="studentDetails" style="margin: 5px 0 0 0; color: #6b7280; font-size: 14px;"></p>
+  </div>
+</div>
 
 <h3>Progress</h3>
 <div class="progress"><div id="bar" class="progress-bar"></div></div>

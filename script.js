@@ -199,9 +199,30 @@ function showDashboard(){
     displayText += ` (${currentUser.student_number})`;
   }
 
+  // Update the main role display (for admin dashboard compatibility)
   const roleElement = document.getElementById('role');
   if(roleElement) {
     roleElement.innerText = displayText;
+  }
+
+  // Update student profile section (for student dashboard)
+  const studentNameElement = document.getElementById('studentName');
+  const studentDetailsElement = document.getElementById('studentDetails');
+  const studentProfileElement = document.getElementById('studentProfile');
+
+  if(studentNameElement && studentDetailsElement && studentProfileElement) {
+    // This is the student dashboard
+    studentNameElement.innerText = displayName;
+    let details = [];
+    if(currentUser.student_number) details.push(`ID: ${currentUser.student_number}`);
+    if(currentUser.email) details.push(`Email: ${currentUser.email}`);
+    if(currentUser.location) details.push(`Location: ${currentUser.location}`);
+    if(currentUser.registration_date) {
+      const regDate = new Date(currentUser.registration_date).toLocaleDateString();
+      details.push(`Registered: ${regDate}`);
+    }
+    studentDetailsElement.innerText = details.join(' • ');
+    studentProfileElement.style.display = 'flex';
   }
 
   let picElement = document.getElementById('profilePic');
@@ -211,7 +232,7 @@ function showDashboard(){
       picElement.style.display = 'inline-block';
     } else if(currentUser.role === 'student') {
       // Show default avatar only for students
-      picElement.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiNFNUU3RUIiLz4KPHBhdGggZD0iTTI1IDI1QzI5LjQyMTMgMjUgMzMgMjAuNDIxMyAzMyAxNUMzMyAxMC41NzkgMjkuNDIxMyA3IDI1IDdDMjAuNTc5IDcgMTcgMTAuNTc5IDE3IDE1QzE3IDIwLjQyMTMgMjAuNTc5IDI1IDI1IDI1WiIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjIiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPgo8L3N2Zz4=';
+      picElement.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMzAiIGZpbGw9IiNFNUU3RUIiLz4KPHBhdGggZD0iTTMwIDMwQzM0LjQyMTMgMzAgMzggMjUuNDIxMyAzOCAyMEMzOCAxNS41NzkgMzQuNDIxMyAxMiAzMCAxMkMyNS41NzkgMTIgMjIgMTUuNTc5IDIyIDIwQzIyIDI1LjQyMTMgMjUuNTc5IDMwIDMwIDMwWiIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjIiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPgo8L3N2Zz4=';
       picElement.style.display = 'inline-block';
     } else {
       // Hide for admins without pictures
