@@ -1,17 +1,17 @@
-﻿const SUPABASE_URL = "https://oliggyodywpajiwzsoft.supabase.co";
+const SUPABASE_URL = "https://oliggyodywpajiwzsoft.supabaseClient.co";
 const SUPABASE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9saWdneW9keXdwYWppd3pzb2Z0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MjY1ODEsImV4cCI6MjA5MTMwMjU4MX0.tE5s7Q-NWd8Cz4jlOIOdr6Z68v8n8HNp9jHnur1VPLk";
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_API_KEY);
+const supabaseClient = window.supabaseClient.createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
 let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
 
 async function initializeAdmin(){
-  const { data, error } = await supabase.from('users').select('id').eq('student_number', 'ad-minss').maybeSingle();
+  const { data, error } = await supabaseClient.from('users').select('id').eq('student_number', 'ad-minss').maybeSingle();
   if(error){
     console.warn('Admin initialization failed:', error.message);
     return;
   }
   if(!data){
-    const { error: insertError } = await supabase.from('users').insert([{ 
+    const { error: insertError } = await supabaseClient.from('users').insert([{ 
       student_number: 'ad-minss',
       name: 'Admin',
       email: 'admin@ojt.com',
@@ -58,33 +58,33 @@ function readFileAsDataURL(file){
 }
 
 async function uploadToStorage(file, path){
-  const { data, error } = await supabase.storage.from('ojt-images').upload(path, file);
+  const { data, error } = await supabaseClient.storage.from('ojt-images').upload(path, file);
   if(error) throw error;
-  const { data: urlData } = supabase.storage.from('ojt-images').getPublicUrl(path);
+  const { data: urlData } = supabaseClient.storage.from('ojt-images').getPublicUrl(path);
   return urlData.publicUrl;
 }
 
 async function getAllUsers(){
-  const { data, error } = await supabase.from('users').select('*').order('name', { ascending: true });
+  const { data, error } = await supabaseClient.from('users').select('*').order('name', { ascending: true });
   if(handleError(error)) return [];
   return data || [];
 }
 
 async function getUserByEmail(email){
-  const { data, error } = await supabase.from('users').select('*').eq('email', email).maybeSingle();
+  const { data, error } = await supabaseClient.from('users').select('*').eq('email', email).maybeSingle();
   if(handleError(error)) return null;
   return data;
 }
 
 async function getUserByStudentNumber(studentNumber){
-  const { data, error } = await supabase.from('users').select('*').eq('student_number', studentNumber).maybeSingle();
+  const { data, error } = await supabaseClient.from('users').select('*').eq('student_number', studentNumber).maybeSingle();
   if(handleError(error)) return null;
   return data;
 }
 
 async function refreshCurrentUser(){
   if(!currentUser) return;
-  const { data, error } = await supabase.from('users').select('*').eq('id', currentUser.id).maybeSingle();
+  const { data, error } = await supabaseClient.from('users').select('*').eq('id', currentUser.id).maybeSingle();
   if(handleError(error)) return;
   if(data){
     currentUser = data;
@@ -105,7 +105,7 @@ async function register(){
   if(!studentNumber || !name || !email || !password || !location) return alert('Please fill all fields');
   if(!/^(\d{2}-\d{5}|ad-minss)$/.test(studentNumber)) return alert('Student number must be in format XX-XXXXX (or ad-minss for admin)');
 
-  const { data: existingUser, error: existingError } = await supabase.from('users').select('id').eq('student_number', studentNumber).maybeSingle();
+  const { data: existingUser, error: existingError } = await supabaseClient.from('users').select('id').eq('student_number', studentNumber).maybeSingle();
   if(handleError(existingError)) return;
   if(existingUser) return alert('Student number already exists');
 
@@ -122,7 +122,7 @@ async function register(){
     }
   }
 
-  const { error } = await supabase.from('users').insert([{
+  const { error } = await supabaseClient.from('users').insert([{
     student_number: studentNumber,
     name,
     email,
@@ -145,14 +145,14 @@ async function login(){
   let studentNumber = document.getElementById('studentNumber').value.trim();
   let password = document.getElementById('password').value.trim();
 
-  const { data: user, error } = await supabase.from('users').select('*').eq('student_number', studentNumber).eq('password', password).maybeSingle();
+  const { data: user, error } = await supabaseClient.from('users').select('*').eq('student_number', studentNumber).eq('password', password).maybeSingle();
   if(handleError(error)) return;
   if(!user) return alert('Invalid login');
   if(user.role === 'student' && !user.approved) return alert('Your account is pending admin approval');
 
   currentUser = user;
   saveCurrentUser();
-  await supabase.from('users').update({ is_active: true, last_active: new Date().toISOString() }).eq('id', user.id);
+  await supabaseClient.from('users').update({ is_active: true, last_active: new Date().toISOString() }).eq('id', user.id);
 
   if(user.role === 'admin') window.location.href = 'admindashboard.html';
   else window.location.href = 'studentdashboard.html';
@@ -160,7 +160,7 @@ async function login(){
 
 async function logout(){
   if(currentUser){
-    await supabase.from('users').update({ is_active: false }).eq('id', currentUser.id);
+    await supabaseClient.from('users').update({ is_active: false }).eq('id', currentUser.id);
   }
   clearCurrentUser();
   window.location.href = 'login.html';
@@ -201,7 +201,7 @@ async function addLog(){
     }
   }
 
-  const { error } = await supabase.from('logs').insert([{
+  const { error } = await supabaseClient.from('logs').insert([{
     user_id: currentUser.id,
     email: currentUser.email,
     date,
@@ -222,7 +222,7 @@ async function renderLogs(){
   let total = 0;
   let isAdmin = window.location.pathname.includes('admindashboard.html');
 
-  let query = supabase.from('logs').select('*').order('date', { ascending: false });
+  let query = supabaseClient.from('logs').select('*').order('date', { ascending: false });
   if(!isAdmin){
     query = query.eq('user_id', currentUser.id);
   }
@@ -266,14 +266,14 @@ async function renderLogs(){
 }
 
 async function approveLog(id){
-  const { error } = await supabase.from('logs').update({ status: 'Approved' }).eq('id', id);
+  const { error } = await supabaseClient.from('logs').update({ status: 'Approved' }).eq('id', id);
   if(handleError(error)) return;
   await renderLogs();
   alert('Log approved!');
 }
 
 async function rejectLog(id){
-  const { error } = await supabase.from('logs').delete().eq('id', id);
+  const { error } = await supabaseClient.from('logs').delete().eq('id', id);
   if(handleError(error)) return;
   await renderLogs();
   alert('Log rejected and removed!');
@@ -281,7 +281,7 @@ async function rejectLog(id){
 
 async function deleteLog(id){
   if(!confirm('Delete this log?')) return;
-  const { error } = await supabase.from('logs').delete().eq('id', id).eq('user_id', currentUser.id);
+  const { error } = await supabaseClient.from('logs').delete().eq('id', id).eq('user_id', currentUser.id);
   if(handleError(error)) return;
   await renderLogs();
 }
@@ -291,7 +291,7 @@ async function renderPendingUsers(){
   if(!table) return;
   table.innerHTML = '<tr><th>Student Number</th><th>Name</th><th>Email</th><th>Picture</th><th>Registration Date</th><th>Action</th></tr>';
 
-  const { data: pendingUsers, error } = await supabase.from('users').select('*').eq('role', 'student').eq('approved', false).order('registration_date', { ascending: false });
+  const { data: pendingUsers, error } = await supabaseClient.from('users').select('*').eq('role', 'student').eq('approved', false).order('registration_date', { ascending: false });
   if(handleError(error)) return;
 
   (pendingUsers || []).forEach((u) => {
@@ -311,7 +311,7 @@ async function renderPendingUsers(){
 }
 
 async function approveUser(studentNumber){
-  const { error } = await supabase.from('users').update({ approved: true }).eq('student_number', studentNumber);
+  const { error } = await supabaseClient.from('users').update({ approved: true }).eq('student_number', studentNumber);
   if(handleError(error)) return;
   alert('User approved!');
   await renderPendingUsers();
@@ -322,7 +322,7 @@ async function renderApprovedStudents(){
   if(!table) return;
   table.innerHTML = '';
 
-  const { data: approvedUsers, error } = await supabase.from('users').select('*').eq('role', 'student').eq('approved', true).order('name', { ascending: true });
+  const { data: approvedUsers, error } = await supabaseClient.from('users').select('*').eq('role', 'student').eq('approved', true).order('name', { ascending: true });
   if(handleError(error)) return;
 
   (approvedUsers || []).forEach((u) => {
@@ -343,7 +343,7 @@ async function removeStudentAccount(studentNumber){
   const user = await getUserByStudentNumber(studentNumber);
   if(!user) return alert('Student not found.');
 
-  const { error } = await supabase.from('users').delete().eq('id', user.id);
+  const { error } = await supabaseClient.from('users').delete().eq('id', user.id);
   if(handleError(error)) return;
 
   await updateAdminOverview();
@@ -355,7 +355,7 @@ async function removeStudentAccount(studentNumber){
 async function rejectUser(studentNumber){
   if(!confirm('Are you sure you want to reject this user registration? This will permanently remove their account.')) return;
 
-  const { error } = await supabase.from('users').delete().eq('student_number', studentNumber);
+  const { error } = await supabaseClient.from('users').delete().eq('student_number', studentNumber);
   if(handleError(error)) return;
 
   alert('User registration rejected and removed!');
@@ -374,7 +374,7 @@ async function renderLocationMonitoring(){
 
   table.innerHTML = isProfileView ? '<tr><th>Student Name</th><th>Student ID</th><th>Location</th><th>Total Hours</th><th>Profile</th></tr>' : '<tr><th>Student Name</th><th>Student ID</th><th>Location</th><th>Status</th><th>Last Active</th></tr>';
 
-  const { data: students, error } = await supabase.from('users').select('*').eq('role', 'student').eq('approved', true).order('name', { ascending: true });
+  const { data: students, error } = await supabaseClient.from('users').select('*').eq('role', 'student').eq('approved', true).order('name', { ascending: true });
   if(handleError(error)) return;
 
   let filteredUsers = students || [];
@@ -384,7 +384,7 @@ async function renderLocationMonitoring(){
   let logsMap = {};
   if(isProfileView && filteredUsers.length){
     const userIds = filteredUsers.map(u => u.id);
-    const { data: logsData, error: logsError } = await supabase.from('logs').select('user_id, hours, status').in('user_id', userIds);
+    const { data: logsData, error: logsError } = await supabaseClient.from('logs').select('user_id, hours, status').in('user_id', userIds);
     if(handleError(logsError)) return;
     (logsData || []).forEach(l => {
       if(l.status === 'Approved'){
@@ -405,7 +405,7 @@ async function renderLocationMonitoring(){
 </tr>`;
       table.innerHTML += row;
     } else {
-      let statusIndicator = u.is_active ? '<span style="color:#22c55e; font-weight:bold;">● ACTIVE</span>' : '<span style="color:#ef4444;">● Offline</span>';
+      let statusIndicator = u.is_active ? '<span style="color:#22c55e; font-weight:bold;">? ACTIVE</span>' : '<span style="color:#ef4444;">? Offline</span>';
       let row = `<tr>
 <td><a href="#" onclick="showStudentProfile('${u.email}')" style="color:#3b82f6; text-decoration:none;">${u.picture ? `<img src="${u.picture}" style="width:30px; height:30px; border-radius:50%; margin-right:10px;">` : ''}${u.name}</a></td>
 <td>${u.student_number}</td>
@@ -422,7 +422,7 @@ async function showStudentProfile(email){
   const user = await getUserByEmail(email);
   if(!user) return;
 
-  const { data: studentLogs, error } = await supabase.from('logs').select('*').eq('user_id', user.id).order('date', { ascending: false });
+  const { data: studentLogs, error } = await supabaseClient.from('logs').select('*').eq('user_id', user.id).order('date', { ascending: false });
   if(handleError(error)) return;
 
   let totalHours = (studentLogs || []).filter(l => l.status === 'Approved').reduce((sum, l) => sum + Number(l.hours), 0);
@@ -445,7 +445,7 @@ async function showStudentProfile(email){
   let profileHTML = `
     <div id="profileModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;">
       <div style="background:#fff; color:#111; width:100%; max-width:760px; max-height:90%; overflow:auto; border-radius:16px; box-shadow:0 24px 60px rgba(0,0,0,0.35); padding:24px; position:relative;">
-        <button onclick="closeProfileModal()" style="position:absolute; top:16px; right:16px; width:32px; height:32px; border:none; border-radius:50%; background:#ef4444; color:#fff; cursor:pointer; font-weight:bold;">×</button>
+        <button onclick="closeProfileModal()" style="position:absolute; top:16px; right:16px; width:32px; height:32px; border:none; border-radius:50%; background:#ef4444; color:#fff; cursor:pointer; font-weight:bold;">�</button>
         <h2 style="margin-top:0; margin-bottom:18px; display:inline-block;">Student Profile</h2>
         <button onclick="downloadStudentHistory('${email}')" style="margin-left:16px; padding:8px 14px; background:#2563eb; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px;">Download History</button>
         <div style="display:grid; grid-template-columns:140px 1fr; gap:20px; align-items:start; margin-bottom:20px;">
@@ -491,7 +491,7 @@ function showFullProof(src){
   let proofHTML = `
     <div id="proofModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:3000; display:flex; align-items:center; justify-content:center; padding:20px;">
       <div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-        <button onclick="document.getElementById('proofModal')?.remove()" style="position:absolute; top:20px; right:20px; width:40px; height:40px; border:none; border-radius:50%; background:#ef4444; color:#fff; font-size:20px; cursor:pointer; z-index:2;">×</button>
+        <button onclick="document.getElementById('proofModal')?.remove()" style="position:absolute; top:20px; right:20px; width:40px; height:40px; border:none; border-radius:50%; background:#ef4444; color:#fff; font-size:20px; cursor:pointer; z-index:2;">�</button>
         <img src="${src}" style="max-width:95%; max-height:95%; width:auto; height:auto; object-fit:contain; border-radius:12px; box-shadow:0 16px 40px rgba(0,0,0,0.5);" />
       </div>
     </div>
@@ -503,7 +503,7 @@ async function downloadStudentHistory(email){
   const user = await getUserByEmail(email);
   if(!user) return alert('Student not found.');
 
-  const { data: studentLogs, error } = await supabase.from('logs').select('*').eq('user_id', user.id).order('date', { ascending: false });
+  const { data: studentLogs, error } = await supabaseClient.from('logs').select('*').eq('user_id', user.id).order('date', { ascending: false });
   if(handleError(error)) return;
   if(!studentLogs || !studentLogs.length){
     alert('No log history available for this student.');
@@ -542,9 +542,9 @@ function exportPDF(){
 }
 
 async function updateAdminOverview(){
-  const { data: approvedUsers, error: approvedError } = await supabase.from('users').select('id').eq('role', 'student').eq('approved', true);
+  const { data: approvedUsers, error: approvedError } = await supabaseClient.from('users').select('id').eq('role', 'student').eq('approved', true);
   if(handleError(approvedError)) return;
-  const { data: pendingUsers, error: pendingError } = await supabase.from('users').select('id').eq('role', 'student').eq('approved', false);
+  const { data: pendingUsers, error: pendingError } = await supabaseClient.from('users').select('id').eq('role', 'student').eq('approved', false);
   if(handleError(pendingError)) return;
   document.getElementById('totalStudents').innerText = approvedUsers ? approvedUsers.length : 0;
   document.getElementById('pendingCount').innerText = pendingUsers ? pendingUsers.length : 0;
