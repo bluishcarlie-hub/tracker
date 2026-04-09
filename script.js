@@ -1,6 +1,6 @@
 ﻿const SUPABASE_URL = "https://oliggyodywpajiwzsoft.supabase.co";
 const SUPABASE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9saWdneW9keXdwYWppd3pzb2Z0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MjY1ODEsImV4cCI6MjA5MTMwMjU4MX0.tE5s7Q-NWd8Cz4jlOIOdr6Z68v8n8HNp9jHnur1VPLk";
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_API_KEY);
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
 let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
 
