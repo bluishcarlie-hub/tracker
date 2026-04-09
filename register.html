@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OJT System - Register</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><h1>OJT Tracking System</h1></header>
+
+<div class="container">
+
+<div id="auth" class="card">
+<h2>Register</h2>
+<input type="text" id="studentNumber" placeholder="Student Number (XX-XXXXX or ad-minss for admin)" required oninput="formatStudentNumber(this)">
+<input type="text" id="name" placeholder="Full Name">
+<input type="text" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+<select id="location" required>
+  <option value="">Select Designated Location</option>
+  <option value="DOST">DOST</option>
+  <option value="DICT">DICT</option>
+  <option value="Cathedral">Cathedral</option>
+  <option value="DAR">DAR</option>
+  <option value="NetCamp">NetCamp</option>
+  <option value="SeekMarketing">SeekMarketing</option>
+  <option value="ESSU">ESSU</option>
+</select>
+<input type="file" id="picture" accept="image/*">
+<button onclick="register()">Register</button>
+<p>Already have an account? <a href="login.html">Login here</a></p>
+<p style="font-size:12px; color:#888;">For admin registration, use student number: ad-minss</p>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script src="script.js"></script>
+<script>
+function formatStudentNumber(input) {
+  let value = input.value;
+  
+  // Check if it's the admin code being typed
+  if (value.toLowerCase().includes('adminss') || value.toLowerCase().includes('ad-minss') || value.toLowerCase().startsWith('a')) {
+    // Allow typing the admin code
+    if (value.toLowerCase() === 'adminss') {
+      input.value = 'ad-minss';
+    } else if (value.toLowerCase().startsWith('ad-')) {
+      input.value = 'ad-minss';
+    }
+    return;
+  }
+  
+  // For regular student numbers, remove non-digits and format
+  let digitsOnly = value.replace(/\D/g, '');
+  if (digitsOnly.length >= 2) {
+    digitsOnly = digitsOnly.substring(0, 2) + '-' + digitsOnly.substring(2, 7);
+  }
+  input.value = digitsOnly;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OJT System - Student Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.burger-menu {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.burger-menu div {
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  margin: 5px 0;
+  transition: 0.3s;
+}
+
+.burger-menu.open div:nth-child(1) {
+  transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.burger-menu.open div:nth-child(2) {
+  opacity: 0;
+}
+
+.burger-menu.open div:nth-child(3) {
+  transform: rotate(45deg) translate(-5px, -6px);
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 250px;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.sidebar.open {
+  right: 0;
+}
+
+.sidebar button {
+  width: 100%;
+  margin: 10px 0;
+}
+
+.sidebar h3 {
+  color: white;
+  margin-bottom: 20px;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+<header>
+<h1>OJT Tracking System</h1>
+<div class="burger-menu" onclick="toggleSidebar()">
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+</header>
+
+<div class="container">
+
+<div id="dashboard" class="card">
+<h2 id="role"></h2>
+<img id="profilePic" style="width:50px; height:50px; border-radius:50%; display:none;">
+<!-- Logout button moved to sidebar -->
+
+<h3>Progress</h3>
+<div class="progress"><div id="bar" class="progress-bar"></div></div>
+<p><span id="total">0</span> / 500 hours</p>
+
+<h3>Add Log</h3>
+<input type="date" id="date">
+<input type="text" id="task" placeholder="Task">
+<input type="number" id="hours" placeholder="Hours">
+<input type="file" id="image">
+<button onclick="addLog()">Add</button>
+<button onclick="exportPDF()">Export PDF</button>
+
+<table>
+<thead>
+<tr><th>Date</th><th>Task</th><th>Hours</th><th>Proof</th><th>Status</th><th>Action</th></tr>
+</thead>
+<tbody id="logs"></tbody>
+</table>
+</div>
+
+</div>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+<h3>Menu</h3>
+<button onclick="logout()">Logout</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script src="script.js"></script>
+<script>
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  const burger = document.querySelector('.burger-menu');
+  sidebar.classList.toggle('open');
+  overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+  burger.classList.toggle('open');
+}
+
+function closeSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  const burger = document.querySelector('.burger-menu');
+  sidebar.classList.remove('open');
+  overlay.style.display = 'none';
+  burger.classList.remove('open');
+}
+</script>
+</body>
+</html>

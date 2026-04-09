@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OJT System</title>
+</head>
+<body>
+<script>
+let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+if(currentUser){
+if(currentUser.role === 'admin') window.location.href = 'admindashboard.html';
+else window.location.href = 'studentdashboard.html';
+} else {
+window.location.href = 'login.html';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OJT System - Login</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><h1>OJT Tracking System</h1></header>
+
+<div class="container">
+
+<div id="auth" class="card">
+<h2>Login</h2>
+<input type="text" id="studentNumber" placeholder="Student Number (XX-XXXXX)" oninput="formatStudentNumber(this)">
+<input type="password" id="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p>Don't have an account? <a href="register.html">Register here</a></p>
+<p style="font-size:12px; color:#888;">Admin: Student ID: ad-minss | Password: admin</p>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script src="script.js"></script>
+<script>
+function formatStudentNumber(input) {
+  let value = input.value;
+  
+  // Check if it's the admin code being typed
+  if (value.toLowerCase().includes('adminss') || value.toLowerCase().includes('ad-minss') || value.toLowerCase().startsWith('a')) {
+    // Allow typing the admin code
+    if (value.toLowerCase() === 'adminss') {
+      input.value = 'ad-minss';
+    } else if (value.toLowerCase().startsWith('ad-')) {
+      input.value = 'ad-minss';
+    }
+    return;
+  }
+  
+  // For regular student numbers, remove non-digits and format
+  let digitsOnly = value.replace(/\D/g, '');
+  if (digitsOnly.length >= 2) {
+    digitsOnly = digitsOnly.substring(0, 2) + '-' + digitsOnly.substring(2, 7);
+  }
+  input.value = digitsOnly;
+}
+</script>
+</body>
+</html>
