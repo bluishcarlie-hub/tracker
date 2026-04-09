@@ -180,13 +180,19 @@ async function logout(){
 }
 
 function showDashboard(){
+  if(!currentUser){
+    const stored = localStorage.getItem('currentUser');
+    if(stored){
+      currentUser = JSON.parse(stored);
+    }
+  }
   if(!currentUser) {
     console.error('showDashboard called without currentUser');
     return;
   }
 
   // Ensure we have a display name
-  let displayName = currentUser.name;
+  let displayName = currentUser.name || currentUser.student_number;
   if(!displayName && currentUser.student_number) {
     displayName = currentUser.student_number;
   }
@@ -206,9 +212,15 @@ function showDashboard(){
   }
 
   // Update student profile section (for student dashboard)
+  const studentHeader = document.getElementById('studentHeader');
   const studentNameElement = document.getElementById('studentName');
   const studentDetailsElement = document.getElementById('studentDetails');
   const studentProfileElement = document.getElementById('studentProfile');
+
+  if(studentHeader){
+    studentHeader.innerText = displayName;
+    studentHeader.style.display = 'block';
+  }
 
   if(studentNameElement && studentDetailsElement && studentProfileElement) {
     // This is the student dashboard - show profile section
@@ -232,6 +244,7 @@ function showDashboard(){
 
     studentDetailsElement.innerHTML = detailsHtml || '<span style="color:#dbeafe;">No profile details available.</span>';
     studentProfileElement.style.display = 'flex';
+    studentProfileElement.style.alignItems = 'center';
   } else if(studentProfileElement) {
     // This is admin dashboard - hide profile section
     studentProfileElement.style.display = 'none';
