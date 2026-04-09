@@ -180,11 +180,30 @@ async function logout(){
 }
 
 function showDashboard(){
-  if(!currentUser) return;
-  let displayName = currentUser.name || currentUser.student_number || (currentUser.role === 'admin' ? 'ADMIN' : 'STUDENT');
+  if(!currentUser) {
+    console.error('showDashboard called without currentUser');
+    return;
+  }
+
+  // Ensure we have a display name
+  let displayName = currentUser.name;
+  if(!displayName && currentUser.student_number) {
+    displayName = currentUser.student_number;
+  }
+  if(!displayName) {
+    displayName = currentUser.role === 'admin' ? 'ADMIN' : 'STUDENT';
+  }
+
   let displayText = displayName;
-  if(currentUser.student_number && currentUser.student_number !== displayName) displayText += ` (${currentUser.student_number})`;
-  document.getElementById('role').innerText = displayText;
+  if(currentUser.student_number && currentUser.student_number !== displayName) {
+    displayText += ` (${currentUser.student_number})`;
+  }
+
+  const roleElement = document.getElementById('role');
+  if(roleElement) {
+    roleElement.innerText = displayText;
+  }
+
   let picElement = document.getElementById('profilePic');
   if(picElement){
     if(currentUser.picture){
@@ -238,54 +257,74 @@ async function addLog(){
 }
 
 async function renderLogs(){
-  if(!supabaseClient) return console.error('Database connection failed');
-  
+  if(!supabaseClient) {
+    console.error('Database connection failed');
+    return;
+  }
+
+  if(!currentUser) {
+    console.error('No current user for renderLogs');
+    return;
+  }
+
   let table = document.getElementById('logs');
-  if(!table) return;
+  if(!table) {
+    console.error('Logs table element not found');
+    return;
+  }
+
   table.innerHTML = '';
   let total = 0;
   let isAdmin = window.location.pathname.includes('admindashboard.html');
 
-  let query = supabaseClient.from('logs').select('*').order('date', { ascending: false });
-  if(!isAdmin){
-    query = query.eq('user_id', currentUser.id);
-  }
-  const { data: logsData, error } = await query;
-  if(handleError(error)) return;
-  const usersList = await getAllUsers();
-
-  (logsData || []).forEach((l) => {
-    if(!isAdmin && l.status === 'Approved') total += Number(l.hours);
-
-    let studentName = l.email;
-    let user = null;
-    if(isAdmin){
-      user = usersList.find(u => u.id === l.user_id);
-      studentName = user ? `${user.name || l.email}${user.student_number ? ` (${user.student_number})` : ''}` : l.email;
+  try {
+    let query = supabaseClient.from('logs').select('*').order('date', { ascending: false });
+    if(!isAdmin){
+      query = query.eq('user_id', currentUser.id);
     }
+    const { data: logsData, error } = await query;
+    if(handleError(error)) return;
 
-    let row = '<tr>';
-    if(isAdmin) row += `<td>${user && user.picture ? `<img src="${user.picture}" style="width:30px; height:30px; border-radius:50%; margin-right:10px;">` : ''}${studentName}</td>`;
-    row += `<td>${l.date}</td>
+    const usersList = await getAllUsers();
+
+    (logsData || []).forEach((l) => {
+      if(!isAdmin && l.status === 'Approved') total += Number(l.hours);
+
+      let studentName = l.email;
+      let user = null;
+      if(isAdmin){
+        user = usersList.find(u => u.id === l.user_id);
+        studentName = user ? `${user.name || l.email}${user.student_number ? ` (${user.student_number})` : ''}` : l.email;
+      }
+
+      let row = '<tr>';
+      if(isAdmin) row += `<td>${user && user.picture ? `<img src="${user.picture}" style="width:30px; height:30px; border-radius:50%; margin-right:10px;">` : ''}${studentName}</td>`;
+      row += `<td>${l.date}</td>
 <td>${l.task}</td>
 <td>${l.hours}</td>
 <td>${l.proof ? `<img src="${l.proof}" style="max-width:100px; max-height:100px;">` : ''}</td>
 <td>${l.status}</td>`;
-    if(isAdmin && l.status === 'Pending'){
-      row += `<td><button onclick="approveLog('${l.id}')" style="background:#22c55e; margin-right:5px;">Approve</button><button onclick="rejectLog('${l.id}')" style="background:#ef4444;">Reject</button></td>`;
-    } else if(!isAdmin && l.status === 'Pending'){
-      row += `<td><button onclick="deleteLog('${l.id}')" style="background:#ef4444;">Delete</button></td>`;
-    } else {
-      row += `<td></td>`;
-    }
-    row += '</tr>';
-    table.innerHTML += row;
-  });
+      if(isAdmin && l.status === 'Pending'){
+        row += `<td><button onclick="approveLog('${l.id}')" style="background:#22c55e; margin-right:5px;">Approve</button><button onclick="rejectLog('${l.id}')" style="background:#ef4444;">Reject</button></td>`;
+      } else if(!isAdmin && l.status === 'Pending'){
+        row += `<td><button onclick="deleteLog('${l.id}')" style="background:#ef4444;">Delete</button></td>`;
+      } else {
+        row += `<td></td>`;
+      }
+      row += '</tr>';
+      table.innerHTML += row;
+    });
 
-  if(!isAdmin){
-    let percent = (total / 500) * 100;
-    document.getElementById('bar').style.width = `${percent}%`;
-    document.getElementById('total').innerText = total;
+    if(!isAdmin){
+      let percent = (total / 500) * 100;
+      const barElement = document.getElementById('bar');
+      const totalElement = document.getElementById('total');
+
+      if(barElement) barElement.style.width = `${percent}%`;
+      if(totalElement) totalElement.innerText = total;
+    }
+  } catch(error) {
+    console.error('Error in renderLogs:', error);
   }
 }
 
@@ -583,8 +622,18 @@ async function updateAdminOverview(){
 document.addEventListener('DOMContentLoaded', async function(){
   // Dashboard-specific initialization
   if(window.location.pathname.includes('studentdashboard.html') || window.location.pathname.includes('admindashboard.html')){
-    await refreshCurrentUser();
-    showDashboard();
-    await renderLogs();
+    try {
+      await refreshCurrentUser();
+      if(!currentUser) {
+        console.error('No current user found, redirecting to login');
+        window.location.href = 'login.html';
+        return;
+      }
+      showDashboard();
+      await renderLogs();
+    } catch(error) {
+      console.error('Dashboard initialization failed:', error);
+      alert('Failed to load dashboard. Please try refreshing the page.');
+    }
   }
 });
