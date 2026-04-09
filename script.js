@@ -211,7 +211,7 @@ function showDashboard(){
   const studentProfileElement = document.getElementById('studentProfile');
 
   if(studentNameElement && studentDetailsElement && studentProfileElement) {
-    // This is the student dashboard
+    // This is the student dashboard - show profile section
     studentNameElement.innerText = displayName;
     let details = [];
     if(currentUser.student_number) details.push(`ID: ${currentUser.student_number}`);
@@ -223,6 +223,9 @@ function showDashboard(){
     }
     studentDetailsElement.innerText = details.join(' • ');
     studentProfileElement.style.display = 'flex';
+  } else if(studentProfileElement) {
+    // This is admin dashboard - hide profile section
+    studentProfileElement.style.display = 'none';
   }
 
   let picElement = document.getElementById('profilePic');
@@ -650,8 +653,13 @@ document.addEventListener('DOMContentLoaded', async function(){
         window.location.href = 'login.html';
         return;
       }
-      showDashboard();
-      await renderLogs();
+
+      // Small delay to ensure DOM is fully ready
+      setTimeout(() => {
+        showDashboard();
+        renderLogs();
+      }, 100);
+
     } catch(error) {
       console.error('Dashboard initialization failed:', error);
       alert('Failed to load dashboard. Please try refreshing the page.');
