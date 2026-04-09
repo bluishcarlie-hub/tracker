@@ -93,7 +93,20 @@ async function getUserByStudentNumber(studentNumber){
 
 async function refreshCurrentUser(){
   if(!currentUser) return;
-  const { data, error } = await supabaseClient.from('users').select('*').eq('id', currentUser.id).maybeSingle();
+
+  let userQuery = supabaseClient.from('users').select('*');
+  if(currentUser.id){
+    userQuery = userQuery.eq('id', currentUser.id);
+  } else if(currentUser.student_number) {
+    userQuery = userQuery.eq('student_number', currentUser.student_number);
+  } else if(currentUser.email) {
+    userQuery = userQuery.eq('email', currentUser.email);
+  } else {
+    clearCurrentUser();
+    return;
+  }
+
+  const { data, error } = await userQuery.maybeSingle();
   if(handleError(error)) return;
   if(data){
     currentUser = data;
@@ -308,6 +321,19 @@ async function renderLogs(){
 
   if(!currentUser) {
     console.error('No current user for renderLogs');
+    return;
+  }
+
+  if(!currentUser.id && currentUser.student_number) {
+    const user = await getUserByStudentNumber(currentUser.student_number);
+    if(user){
+      currentUser = user;
+      saveCurrentUser();
+    }
+  }
+
+  if(!currentUser.id) {
+    console.error('No current user ID for renderLogs');
     return;
   }
 
