@@ -19,6 +19,8 @@ create table if not exists public.users (
   updated_at timestamptz not null default now()
 );
 
+alter table public.users disable row level security;
+
 create table if not exists public.logs (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
@@ -31,6 +33,8 @@ create table if not exists public.logs (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.logs disable row level security;
 
 create index if not exists idx_logs_user_id on public.logs(user_id);
 create index if not exists idx_users_role on public.users(role);
