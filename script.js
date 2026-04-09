@@ -208,7 +208,7 @@ async function addLog(){
     task,
     hours: Number(hours),
     proof,
-    status: 'Pending'
+    status: proof ? 'Approved' : 'Pending'
   }]);
   if(handleError(error)) return;
 
