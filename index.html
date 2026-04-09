@@ -4,15 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OJT System</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+<header><h1>OJT Tracking System</h1></header>
+
+<div class="container">
+<div class="card">
+<h2>Welcome to OJT Tracking System</h2>
+<p>Track your On-the-Job Training hours and progress.</p>
+
+<div style="margin: 20px 0;">
+<a href="login.html" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin-right: 10px;">Login</a>
+<a href="register.html" style="background: #22c55e; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px;">Register</a>
+</div>
+
+<p style="color: #666; font-size: 14px;">Admin login: student number 'ad-minss', password 'admin123'</p>
+</div>
+</div>
+
 <script>
 let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
 if(currentUser){
-if(currentUser.role === 'admin') window.location.href = 'admindashboard.html';
-else window.location.href = 'studentdashboard.html';
-} else {
-window.location.href = 'login.html';
+  // Only redirect if user is already logged in
+  if(currentUser.role === 'admin') {
+    window.location.href = 'admindashboard.html';
+  } else {
+    window.location.href = 'studentdashboard.html';
+  }
 }
 </script>
 </body>
