@@ -213,15 +213,24 @@ function showDashboard(){
   if(studentNameElement && studentDetailsElement && studentProfileElement) {
     // This is the student dashboard - show profile section
     studentNameElement.innerText = displayName;
-    let details = [];
-    if(currentUser.student_number) details.push(`ID: ${currentUser.student_number}`);
-    if(currentUser.email) details.push(`Email: ${currentUser.email}`);
-    if(currentUser.location) details.push(`Location: ${currentUser.location}`);
+
+    // Create detail spans
+    let detailsHtml = '';
+    if(currentUser.student_number) {
+      detailsHtml += `<span>ID: ${currentUser.student_number}</span>`;
+    }
+    if(currentUser.email) {
+      detailsHtml += `<span>Email: ${currentUser.email}</span>`;
+    }
+    if(currentUser.location) {
+      detailsHtml += `<span>Location: ${currentUser.location}</span>`;
+    }
     if(currentUser.registration_date) {
       const regDate = new Date(currentUser.registration_date).toLocaleDateString();
-      details.push(`Registered: ${regDate}`);
+      detailsHtml += `<span>Registered: ${regDate}</span>`;
     }
-    studentDetailsElement.innerText = details.join(' • ');
+
+    studentDetailsElement.innerHTML = detailsHtml;
     studentProfileElement.style.display = 'flex';
   } else if(studentProfileElement) {
     // This is admin dashboard - hide profile section
@@ -291,6 +300,8 @@ async function renderLogs(){
     return;
   }
 
+  console.log('Rendering logs for user:', currentUser.id, currentUser.student_number);
+
   let table = document.getElementById('logs');
   if(!table) {
     console.error('Logs table element not found');
@@ -305,9 +316,16 @@ async function renderLogs(){
     let query = supabaseClient.from('logs').select('*').order('date', { ascending: false });
     if(!isAdmin){
       query = query.eq('user_id', currentUser.id);
+      console.log('Querying logs for user_id:', currentUser.id);
     }
     const { data: logsData, error } = await query;
-    if(handleError(error)) return;
+
+    if(handleError(error)) {
+      console.error('Error fetching logs:', error);
+      return;
+    }
+
+    console.log('Fetched logs:', logsData ? logsData.length : 0, 'logs');
 
     const usersList = await getAllUsers();
 
@@ -647,18 +665,24 @@ document.addEventListener('DOMContentLoaded', async function(){
   // Dashboard-specific initialization
   if(window.location.pathname.includes('studentdashboard.html') || window.location.pathname.includes('admindashboard.html')){
     try {
+      console.log('Initializing dashboard...');
       await refreshCurrentUser();
+
       if(!currentUser) {
         console.error('No current user found, redirecting to login');
         window.location.href = 'login.html';
         return;
       }
 
-      // Small delay to ensure DOM is fully ready
-      setTimeout(() => {
+      console.log('Current user loaded:', currentUser.name || currentUser.student_number);
+
+      // Ensure DOM is fully ready before updating UI
+      setTimeout(async () => {
+        console.log('Calling showDashboard and renderLogs...');
         showDashboard();
-        renderLogs();
-      }, 100);
+        await renderLogs();
+        console.log('Dashboard initialization complete');
+      }, 200);
 
     } catch(error) {
       console.error('Dashboard initialization failed:', error);
